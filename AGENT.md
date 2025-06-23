@@ -10,3 +10,4 @@
 - Function comments use Go standard format `// FunctionName does X`
 - Variable naming follows camelCase
 - File structure follows standard Go package conventions
+

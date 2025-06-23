@@ -21,41 +21,11 @@ go get github.com/maloquacious/gsrv
 
 ### Basic Example
 
-```go
-package main
+See [cmd/example/main.go](cmd/example/main.go) for a complete working example.
 
-import (
-    "log"
-    "net/http"
-    
-    "github.com/maloquacious/gsrv"
-)
-
-func main() {
-    // Create server with default settings
-    server, err := gsrv.New(
-        gsrv.WithHost("localhost"),
-        gsrv.WithPort("8080"),
-    )
-    if err != nil {
-        log.Fatal(err)
-    }
-    
-    // Set up routes
-    mux := http.NewServeMux()
-    mux.Handle("GET /health", server.HealthHandler())
-    mux.Handle("POST /shutdown/{key}", server.ShutdownHandler())
-    mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-        w.Write([]byte("Hello, World!"))
-    })
-    
-    server.Handler = mux
-    
-    // Start server - blocks until shutdown signal received
-    if err := server.ListenAndServe(); err != nil {
-        log.Printf("Server error: %v", err)
-    }
-}
+To run the example:
+```bash
+go run cmd/example/main.go
 ```
 
 ### Configuration Options
@@ -93,3 +63,61 @@ The server automatically handles graceful shutdown:
 3. Cancels idle connections
 4. Waits up to 10 seconds for active requests to complete
 5. Forces shutdown if timeout exceeded
+
+## Production Readiness TODO List
+
+### Security & Authentication
+- [ ] Rate limiting for shutdown endpoint to prevent abuse
+- [ ] More secure shutdown key handling (env vars, key rotation)
+- [ ] Input validation and sanitization for all endpoints
+- [ ] Add request ID/tracing support for better debugging
+- [ ] Security headers middleware (CORS, CSP, etc.)
+
+### Observability & Monitoring  
+- [ ] Structured logging with configurable log levels
+- [ ] Metrics collection (Prometheus format) - request counts, response times, uptime
+- [ ] Custom health check functions (database, external services)
+- [ ] Distributed tracing support (OpenTelemetry)
+- [ ] Error tracking and alerting integration
+
+### Configuration & Deployment
+- [ ] Environment-based configuration (12-factor app)
+- [ ] Configuration validation on startup
+- [ ] Docker support and multi-stage builds
+- [ ] Helm charts for Kubernetes deployment
+- [ ] Health check endpoints for container orchestration
+
+### Testing & Quality
+- [ ] Comprehensive test coverage (>90%) 
+- [ ] Integration tests for graceful shutdown scenarios
+- [ ] Benchmarking tests for performance validation
+- [ ] Fuzzing tests for security validation
+- [ ] CI/CD pipeline with automated testing
+
+### Documentation & Examples
+- [ ] Comprehensive API documentation (godoc)
+- [ ] Production deployment examples
+- [ ] Best practices guide
+- [ ] Troubleshooting guide
+- [ ] Performance tuning guide
+
+### Error Handling & Resilience
+- [ ] Circuit breaker pattern for dependencies
+- [ ] Retry logic with exponential backoff
+- [ ] Timeout configuration for all operations
+- [ ] Graceful degradation strategies
+- [ ] Panic recovery middleware
+
+### Performance & Scalability
+- [ ] Connection pooling optimizations
+- [ ] Memory usage profiling and optimization
+- [ ] CPU profiling and bottleneck identification
+- [ ] Load testing and capacity planning
+- [ ] Horizontal scaling support
+
+### Operations & Maintenance
+- [ ] Automated dependency updates
+- [ ] Security vulnerability scanning
+- [ ] Performance regression testing
+- [ ] Rollback strategies
+- [ ] Maintenance mode support
