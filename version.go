@@ -1,15 +1,32 @@
 package gsrv
 
 import (
-	"fmt"
+	"runtime/debug"
+
 	"github.com/maloquacious/semver"
-	"github.com/spf13/cobra"
 )
 
 var (
-	version = semver.Version{Major: 0, Minor: 1, Patch: 0, PreRelease: "alpha"}
+	version = semver.Version{Major: 1, Minor: 0, Patch: 0}
 )
 
-func Version() semver.Version {
-	return version
+func Version() (result struct {
+	Version        semver.Version
+	PackageVersion string
+	Modified       string
+	Revision       string
+}) {
+	result.Version = version
+	if info, ok := debug.ReadBuildInfo(); ok {
+		result.PackageVersion = info.Main.Version
+		for _, setting := range info.Settings {
+			switch setting.Key {
+			case "vcs.modified":
+				result.Modified = setting.Value
+			case "vcs.revision":
+				result.Revision = setting.Value
+			}
+		}
+	}
+	return result
 }
